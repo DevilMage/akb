@@ -1,0 +1,515 @@
+/* ===================== БАЗА ===================== */
+* { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+  background: #f7f8fa;
+  color: #1f2a33;
+}
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ===================== ТУЛБАР ПРИЛОЖЕНИЯ ===================== */
+.toolbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e6ec;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  z-index: 10;
+}
+.toolbar-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-right: 14px;
+  color: #2c3e50;
+  letter-spacing: 0.3px;
+}
+.tool-btn {
+  background: #ffffff;
+  border: 1.5px solid #dfe4ea;
+  color: #34495e;
+  font-weight: 600;
+  font-size: 0.86rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+  outline: none;
+  font-family: inherit;
+}
+.tool-btn:hover { background: #f0f4f9; border-color: #b8c4d2; }
+.tool-btn:focus-visible { box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.35); }
+.tool-btn .icon { font-size: 1.05rem; line-height: 1; }
+.tool-btn.danger { color: #c0392b; border-color: #f0c4c0; }
+.tool-btn.danger:hover { background: #fdf0ef; }
+.tool-btn.active {
+  background: #4a90e2;
+  border-color: #4a90e2;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.35);
+}
+.divider { width: 1px; height: 26px; background: #e2e6ec; margin: 0 6px; }
+
+.run-btn {
+  margin-left: auto;
+  background: #27ae60;
+  border-color: #1e8449;
+  color: #fff;
+  font-weight: 700;
+  padding: 9px 20px;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+.run-btn:hover { background: #2ecc71; border-color: #27ae60; }
+.run-btn.active {
+  background: #e74c3c;
+  border-color: #c0392b;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+  animation: pulse-run 1.6s ease-in-out infinite;
+}
+.run-btn.active:hover { background: #ec7063; border-color: #e74c3c; }
+@keyframes pulse-run {
+  0%, 100% { box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4); }
+  50%      { box-shadow: 0 2px 18px rgba(231, 76, 60, 0.7); }
+}
+
+/* ===================== РАБОЧЕЕ ПОЛЕ ===================== */
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  background-image:
+    linear-gradient(to right,  #e6e6e6 1px, transparent 1px),
+    linear-gradient(to bottom, #e6e6e6 1px, transparent 1px),
+    linear-gradient(to right,  #cfcfcf 1px, transparent 1px),
+    linear-gradient(to bottom, #cfcfcf 1px, transparent 1px);
+  background-size:
+    20px 20px,
+    20px 20px,
+    100px 100px,
+    100px 100px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+}
+#canvas { display: block; width: 100%; height: 100%; cursor: default; outline: none; }
+
+/* ★ Во время перетаскивания панели скетча — блокируем canvas */
+body.sketch-dragging .canvas-wrap {
+  pointer-events: none !important;
+}
+body.sketch-dragging .canvas-wrap * {
+  pointer-events: none !important;
+}
+
+/* ===================== СТАТУСБАР ===================== */
+.statusbar {
+  background: #ffffff;
+  border-top: 1px solid #e2e6ec;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  color: #6b7a8d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hint { color: #8b97a8; }
+
+/* ===================== ПАНЕЛЬ СВОЙСТВ ===================== */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.12);
+  z-index: 25;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.props-panel {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  width: 320px;
+  max-height: 80%;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px #e2e6ec;
+  z-index: 30;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.props-panel.show { opacity: 1; pointer-events: auto; }
+.props-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef1f5;
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  border-radius: 16px 16px 0 0;
+  z-index: 1;
+  cursor: move;
+  user-select: none;
+}
+.props-header:active { cursor: grabbing; }
+.props-header .drag-handle {
+  color: #b0bccb;
+  margin-right: 8px;
+  letter-spacing: -3px;
+}
+.props-header .title-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.props-close {
+  background: transparent;
+  border: none;
+  color: #95a5a6;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.props-close:hover { background: #f0f4f9; color: #2c3e50; }
+.props-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.props-row { display: flex; flex-direction: column; gap: 4px; }
+.props-row label {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.props-row input[type="number"] {
+  border: 1.5px solid #dfe4ea;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #2c3e50;
+  outline: none;
+  background: #f9fbfd;
+  transition: border-color 0.15s, background 0.15s;
+}
+.props-row input:focus { border-color: #4a90e2; background: #ffffff; }
+.props-hint {
+  font-size: 0.75rem;
+  color: #95a5a6;
+  font-style: italic;
+  margin-top: -2px;
+}
+.props-action-btn {
+  padding: 10px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.props-action-btn.charge { border-color: #27ae60; color: #27ae60; }
+.props-action-btn.charge:hover { background: #eafaf1; }
+.props-action-btn.replace { border-color: #e67e22; color: #e67e22; }
+.props-action-btn.replace:hover { background: #fef5e7; }
+.battery-level {
+  height: 14px;
+  border-radius: 7px;
+  background: #ecf0f1;
+  overflow: hidden;
+  position: relative;
+}
+.battery-level-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);
+  background-size: 300% 100%;
+  transition: width 0.3s;
+  border-radius: 7px;
+}
+.battery-status {
+  font-size: 0.78rem;
+  color: #7f8c8d;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* =========================================================================
+   ПАНЕЛЬ РЕДАКТОРА C++ СКЕТЧА — Arduino IDE (справа)
+   ========================================================================= */
+.sketch-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  left: auto;
+  width: 900px;
+  height: 700px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  display: none;
+  flex-direction: column;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px #3c3c3c;
+  z-index: 1000;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+.sketch-panel.show { display: flex; }
+
+.sketch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3c3c3c;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e8e8e8;
+  cursor: move;
+  user-select: none;
+}
+.sketch-header .drag-handle {
+  color: #7a7a7a;
+  margin-right: 8px;
+  letter-spacing: -3px;
+}
+.sketch-header .title-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sketch-header .props-close {
+  color: #b8b8c0;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.sketch-header .props-close:hover { background: #4a4a4a; color: #fff; }
+
+.sketch-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3c3c3c;
+  font-size: 13px;
+}
+.sketch-toolbar .tool-btn {
+  background: #0e639c;
+  border: none;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+}
+.sketch-toolbar .tool-btn:hover { background: #1177bb; }
+.sketch-toolbar .tool-btn.secondary {
+  background: #3c3c3c;
+  border: 1px solid #555;
+  color: #d4d4d4;
+}
+.sketch-toolbar .tool-btn.secondary:hover { background: #4c4c4c; }
+.sketch-toolbar .tool-btn:disabled,
+.sketch-toolbar .tool-btn[disabled] {
+  background: #2d2d2d;
+  color: #6a6a6a;
+  border-color: #3c3c3c;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.sketch-toolbar .separator {
+  width: 1px;
+  height: 22px;
+  background: #3c3c3c;
+  margin: 0 4px;
+}
+.sketch-toolbar label { color: #ccc; font-size: 13px; font-weight: 400; }
+.sketch-toolbar select {
+  background: #3c3c3c;
+  color: #d4d4d4;
+  border: 1px solid #555;
+  padding: 6px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+}
+.sketch-toolbar select:focus { border-color: #0e639c; }
+
+.sketch-main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.sketch-editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #1e1e1e;
+}
+.sketch-editor-header {
+  background: #252526;
+  padding: 5px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid #3c3c3c;
+  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.sketch-editor-header .file-name { color: #d4d4d4; }
+.sketch-editor-header .board-info { color: #8a8a92; font-size: 11px; }
+
+#sketchEditor {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background: #1e1e1e;
+}
+#sketchCode { display: none; }
+
+.sketch-console-wrap {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #3c3c3c;
+  background: #1e1e1e;
+  height: 170px;
+  flex-shrink: 0;
+}
+.sketch-console-header {
+  background: #252526;
+  padding: 5px 14px;
+  font-size: 12px;
+  border-bottom: 1px solid #3c3c3c;
+  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.sketch-console-header .sub {
+  font-size: 11px;
+  opacity: 0.7;
+  color: #8a8a92;
+}
+.sketch-console {
+  flex: 1;
+  padding: 8px 14px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #1e1e1e;
+  color: #cccccc;
+  user-select: text;
+}
+.sketch-console:empty::before {
+  content: 'Готово. Выберите пример или напишите код.';
+  color: #6a6a6a;
+  font-style: italic;
+}
+.sketch-console .log-info    { color: #569cd6; }
+.sketch-console .log-serial  { color: #6a9955; }
+.sketch-console .log-success { color: #6a9955; }
+.sketch-console .log-warn    { color: #dcdcaa; }
+.sketch-console .log-error   { color: #f48771; }
+
+.sketch-statusbar {
+  background: #007acc;
+  color: #ffffff;
+  padding: 4px 14px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 24px;
+  flex-shrink: 0;
+}
+.sketch-statusbar .status-text { font-weight: 500; }
+.sketch-statusbar .version { opacity: 0.8; font-size: 11px; }
+
+.sketch-panel ::-webkit-scrollbar { width: 10px; height: 10px; }
+.sketch-panel ::-webkit-scrollbar-track { background: #1e1e1e; }
+.sketch-panel ::-webkit-scrollbar-thumb { background: #424242; border-radius: 5px; }
+.sketch-panel ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+
+/* Ручка изменения размера панели скетча */
+.sketch-panel::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  background:
+    linear-gradient(135deg,
+      transparent 0%,
+      transparent 50%,
+      #6a6a72 50%,
+      #6a6a72 55%,
+      transparent 55%,
+      transparent 65%,
+      #6a6a72 65%,
+      #6a6a72 70%,
+      transparent 70%,
+      transparent 80%,
+      #6a6a72 80%,
+      #6a6a72 85%,
+      transparent 85%);
+  z-index: 10;
+}
+.sketch-panel.resize-h {
+  cursor: nwse-resize;
+}
