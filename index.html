@@ -3,851 +3,337 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="format-detection" content="telephone=no">
-<title>Сервис по восстановлению источников питания</title>
+<title>Симулятор схем</title>
+<link rel="stylesheet" href="css/style.css">
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TFN2G9RDL4"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TFN2G9RDL4');
-</script>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Roboto,system-ui,-apple-system,sans-serif;background:#f8fafc;color:#0b1a2b;line-height:1.5}
-.container{max-width:1120px;margin:0 auto;padding:0 20px}
-.header{background:rgba(255,255,255,.95);box-shadow:0 4px 12px rgba(0,0,0,.04);padding:18px 0;position:sticky;top:0;z-index:10}
-.header-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.5rem}
-.logo .ico{font-size:1.8rem}
-.header-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-
-.lang-switch{
-  display:flex;align-items:center;
-  background:#eef2f6;border-radius:40px;
-  padding:3px;border:1px solid #dbe3ec;
-  overflow:hidden;
-}
-.lang-switch button{
-  border:none;background:transparent;
-  padding:7px 12px;border-radius:40px;
-  font-family:inherit;font-size:.85rem;font-weight:700;
-  color:#3d4e5f;cursor:pointer;transition:.2s;
-  letter-spacing:.5px;
-}
-.lang-switch button:hover{color:#c0392b}
-.lang-switch button.active{
-  background:#c0392b;color:#fff;
-  box-shadow:0 3px 8px rgba(192,57,43,.35);
-}
-
-.online-counter{
-  display:flex;align-items:center;gap:10px;
-  background:linear-gradient(135deg,#e8f8ef,#d5f2e3);
-  border:1px solid #b9e6cc;
-  padding:8px 16px;border-radius:40px;
-  font-weight:600;font-size:.9rem;color:#1e8449;
-  cursor:default;position:relative;
-}
-.online-counter .pulse{
-  width:10px;height:10px;border-radius:50%;
-  background:#27ae60;
-  box-shadow:0 0 0 0 rgba(39,174,96,.7);
-  animation:onlinePulse 1.8s infinite;flex-shrink:0;
-}
-@keyframes onlinePulse{
-  0%{box-shadow:0 0 0 0 rgba(39,174,96,.7)}
-  70%{box-shadow:0 0 0 10px rgba(39,174,96,0)}
-  100%{box-shadow:0 0 0 0 rgba(39,174,96,0)}
-}
-.online-counter .num{
-  background:#27ae60;color:#fff;
-  padding:1px 9px;border-radius:20px;
-  font-size:.85rem;font-weight:700;
-  min-width:26px;text-align:center;transition:.3s;
-}
-.online-counter .num.flash{background:#1e8449;transform:scale(1.15)}
-.online-counter .label{white-space:nowrap}
-.online-counter .tooltip{
-  position:absolute;top:calc(100% + 10px);right:0;
-  background:#0b1a2b;color:#fff;
-  padding:10px 14px;border-radius:14px;
-  font-size:.78rem;font-weight:500;
-  white-space:nowrap;
-  opacity:0;visibility:hidden;transform:translateY(-6px);
-  transition:.25s;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:20;
-}
-.online-counter .tooltip::before{
-  content:'';position:absolute;bottom:100%;right:18px;
-  border:6px solid transparent;border-bottom-color:#0b1a2b;
-}
-.online-counter:hover .tooltip{opacity:1;visibility:visible;transform:translateY(0)}
-.online-counter .tooltip div{margin:2px 0}
-.online-counter .tooltip b{color:#f1c40f}
-
-.header-phone{background:#eef2f6;padding:8px 18px;border-radius:40px;font-weight:600;color:#0b1a2b;text-decoration:none}
-.hero{padding:40px 0 50px;background:linear-gradient(145deg,#fff 0%,#f1f6fa 100%);border-radius:0 0 40px 40px;margin-bottom:24px}
-.hero-grid{display:flex;flex-wrap:wrap;align-items:center;gap:30px}
-.hero-content{flex:1 1 300px}
-.hero-content h1{font-size:2.6rem;font-weight:800;line-height:1.2;margin-bottom:18px}
-.hero-content h1 span{color:#c0392b;background:rgba(192,57,43,.08);padding:0 10px;border-radius:12px}
-.hero-content p{font-size:1.2rem;color:#2c3e50;max-width:480px;margin-bottom:28px}
-.hero-stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:10px}
-.hero-stats div{display:flex;align-items:center;gap:8px;font-weight:500}
-.hero-image{flex:1 1 260px;display:flex;justify-content:center}
-.btn-primary{display:inline-block;background:#c0392b;color:#fff;font-weight:700;padding:16px 40px;border-radius:60px;font-size:1.1rem;border:none;cursor:pointer;transition:.2s;box-shadow:0 8px 18px rgba(192,57,43,.3);text-decoration:none}
-.btn-primary:hover{background:#a93226;transform:scale(1.02)}
-.section-title{font-size:2rem;font-weight:700;margin-bottom:32px;display:flex;align-items:center;gap:14px}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px;margin:32px 0 20px}
-.service-card{background:#fff;border-radius:28px;padding:28px 20px;box-shadow:0 6px 18px rgba(0,0,0,.03);border:1px solid #eef2f6;text-align:center;transition:.2s}
-.service-card:hover{transform:translateY(-6px)}
-.service-card .emoji{font-size:2.8rem;display:block;margin-bottom:16px}
-.service-card h3{font-size:1.3rem;font-weight:600;margin-bottom:8px}
-.service-card p{color:#3d4e5f;font-size:.95rem}
-.benefits{background:#fff;border-radius:40px;padding:48px 40px 52px;border:1px solid #edf2f7;box-shadow:0 12px 36px rgba(0,0,0,.05);width:100%;margin:48px 0;text-align:center}
-.benefits .section-title{justify-content:center;margin-bottom:40px}
-.benefits-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;text-align:left}
-.benefit-item{display:flex;align-items:flex-start;gap:16px}
-.benefit-item .emoji{font-size:1.8rem;min-width:2.2rem;text-align:center}
-.benefit-item h4{font-weight:600;font-size:1.1rem;margin-bottom:4px}
-.benefit-item p{color:#3d4e5f;font-size:.95rem}
-.chat-section{margin:56px 0 40px;text-align:center}
-.chat-section .section-title{justify-content:center}
-.chat-section .chat-subtitle{max-width:640px;margin:0 auto 34px;text-align:center;color:#3d4e5f;font-size:1.02rem}
-.chat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;width:100%;text-align:left;justify-items:center}
-.chat-card{background:#fff;border-radius:22px;padding:18px 18px 8px;box-shadow:0 8px 26px rgba(0,0,0,.05);border:1px solid #eef2f6;display:flex;flex-direction:column;overflow:hidden;transition:.2s;width:100%;max-width:340px;min-width:0}
-.chat-card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.08)}
-.chat-header{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid #eef2f6;margin-bottom:12px}
-.chat-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;color:#fff;font-weight:700}
-.chat-avatar.red{background:linear-gradient(135deg,#e74c3c,#c0392b)}
-.chat-avatar.blue{background:linear-gradient(135deg,#3498db,#2471a3)}
-.chat-avatar.dark{background:linear-gradient(135deg,#34495e,#1c2833)}
-.chat-avatar.purple{background:linear-gradient(135deg,#9b59b6,#7d3c98)}
-.chat-avatar.green{background:linear-gradient(135deg,#27ae60,#1e8449)}
-.chat-avatar.orange{background:linear-gradient(135deg,#f39c12,#d68910)}
-.chat-avatar.teal{background:linear-gradient(135deg,#1abc9c,#16a085)}
-.chat-avatar.indigo{background:linear-gradient(135deg,#5c6bc0,#3949ab)}
-.chat-who{flex:1;min-width:0}
-.chat-who .name{font-weight:700;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-who .status{font-size:.75rem;color:#27ae60;display:flex;align-items:center;gap:5px}
-.chat-who .status::before{content:'';width:7px;height:7px;border-radius:50%;background:#27ae60;display:inline-block;box-shadow:0 0 0 0 rgba(39,174,96,.6);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(39,174,96,.6)}70%{box-shadow:0 0 0 8px rgba(39,174,96,0)}100%{box-shadow:0 0 0 0 rgba(39,174,96,0)}}
-.chat-body{flex:1;display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
-.msg{max-width:88%;padding:9px 12px;border-radius:16px;font-size:.86rem;line-height:1.4;position:relative;word-wrap:break-word}
-.msg.client{align-self:flex-start;background:#eef2f6;color:#0b1a2b;border-bottom-left-radius:4px}
-.msg.service{align-self:flex-end;background:#c0392b;color:#fff;border-bottom-right-radius:4px}
-.msg.time{font-size:.65rem;opacity:.65;display:block;margin-top:3px;text-align:right}
-.msg.client .time{color:#3d4e5f}
-.msg.service .time{color:#ffd9d3}
-.chat-footer{font-size:.75rem;color:#8496a8;text-align:center;padding:6px 0 8px;border-top:1px solid #f3f6f9}
-.chat-footer .avito-mark{color:#00aaff;font-weight:600}
-.rating{color:#f1c40f;font-size:.8rem;letter-spacing:1px}
-.form-section{background:#fff;border-radius:40px;padding:48px 40px 52px;border:1px solid #edf2f7;box-shadow:0 12px 36px rgba(0,0,0,.05);width:100%;margin:48px 0}
-.form-section .section-title{justify-content:center;margin-bottom:14px}
-.form-section .form-subtitle{text-align:center;color:#3d4e5f;max-width:560px;margin:0 auto 34px;font-size:1.02rem}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:780px;margin:0 auto}
-.form-grid .full{grid-column:1 / -1}
-.form-field{display:flex;flex-direction:column;gap:6px}
-.form-field label{font-size:.85rem;font-weight:600;color:#3d4e5f;padding-left:14px}
-.form-field input,.form-field textarea{width:100%;padding:14px 20px;border-radius:60px;border:1.5px solid #dbe3ec;background:#f8fafc;font-family:inherit;font-size:1rem;color:#0b1a2b;outline:none;transition:.2s}
-.form-field textarea{border-radius:22px;resize:vertical;min-height:110px}
-.form-field input:focus,.form-field textarea:focus{border-color:#c0392b;background:#fff;box-shadow:0 0 0 4px rgba(192,57,43,.08)}
-.form-submit{grid-column:1 / -1;display:flex;justify-content:center;margin-top:8px}
-.form-submit button{background:#c0392b;color:#fff;font-weight:700;padding:16px 48px;border-radius:60px;font-size:1.05rem;border:none;cursor:pointer;transition:.2s;box-shadow:0 8px 18px rgba(192,57,43,.3)}
-.form-submit button:hover{background:#a93226;transform:scale(1.02)}
-.form-note{grid-column:1 / -1;text-align:center;font-size:.8rem;color:#8496a8;margin-top:6px}
-.form-note a{color:#c0392b;text-decoration:none;font-weight:600}
-.form-success{display:none;grid-column:1 / -1;text-align:center;padding:16px 20px;background:#e8f8ef;border:1px solid #27ae60;border-radius:16px;color:#1e8449;font-weight:600;margin-top:8px}
-.form-success.show{display:block}
-.contact-block{background:#0b1a2b;border-radius:40px;padding:48px 32px;color:#fff;margin:44px 0 30px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:30px}
-.contact-block h2{font-size:1.9rem;font-weight:700}
-.contact-block p{opacity:.8;margin-top:6px}
-.contact-actions{display:flex;flex-wrap:wrap;gap:14px}
-.contact-actions a{display:inline-block;padding:16px 32px;border-radius:60px;text-decoration:none;font-weight:700;font-size:1rem;transition:.2s}
-.contact-actions .call{background:#1f3142;color:#fff}
-.contact-actions .write{background:#c0392b;color:#fff;box-shadow:0 8px 18px rgba(192,57,43,.25)}
-.contact-actions a:hover{transform:scale(1.03)}
-.footer{border-top:1px solid #e2e8f0;padding:30px 0 24px;margin-top:24px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;font-size:.95rem;color:#3d4e5f}
-.footer a{color:#0b1a2b;text-decoration:none;font-weight:500}
-.footer a:hover{color:#c0392b}
-.badge{background:#eef2f6;border-radius:40px;padding:6px 18px;font-size:.85rem;font-weight:600;display:inline-block;margin-bottom:12px}
-@media(max-width:900px){.chat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.form-grid{grid-template-columns:1fr;max-width:100%}.form-section{padding:36px 22px 40px}}
-@media(max-width:640px){
-.hero-content h1{font-size:2rem}
-.header-inner{flex-direction:column;align-items:stretch;text-align:center}
-.header-right{justify-content:center}
-.contact-block{flex-direction:column;text-align:center}
-.contact-actions{flex-direction:column;width:100%}
-.contact-actions a{width:100%;text-align:center}
-.footer{flex-direction:column;text-align:center}
-.chat-grid{grid-template-columns:1fr}
-.benefits{padding:36px 22px 40px}
-.benefits-list{grid-template-columns:1fr}
-.online-counter .tooltip{right:-10px;font-size:.72rem}
-}
-</style>
+<!-- Monaco Editor (движок VS Code — как в Arduino IDE) -->
+<link rel="stylesheet"
+      data-name="vs/editor/editor.main"
+      href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css">
 </head>
 <body>
 
-<header class="header">
-  <div class="container header-inner">
-    <div class="logo"><span class="ico">⚡</span><span data-i18n="logo">Аккумулятор+</span></div>
-    <div class="header-right">
+<div class="app">
 
-      <!-- ====== ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА RU / BA / TT ====== -->
-      <div class="lang-switch" role="group" aria-label="Переключение языка">
-        <button type="button" data-lang="ru" class="active" onclick="setLang('ru')">RU</button>
-        <button type="button" data-lang="ba" onclick="setLang('ba')">BA</button>
-        <button type="button" data-lang="tt" onclick="setLang('tt')">TT</button>
-      </div>
+  <!-- ===================== ВЕРХНИЙ ТУЛБАР ===================== -->
+  <div class="toolbar">
+    <div class="toolbar-title">⚙️ Симулятор схем</div>
 
-      <!-- ====== ОНЛАЙН-СЧЁТЧИК ====== -->
-      <div class="online-counter" title="Статистика в реальном времени">
-        <span class="pulse"></span>
-        <span class="label" data-i18n="online">Сейчас на сайте:</span>
-        <span class="num" id="onlineNow">7</span>
-        <div class="tooltip">
-          <div>👥 <b id="todayVisits">142</b> <span data-i18n="today">визитов сегодня</span></div>
-          <div>📅 <b id="weekVisits">1 038</b> <span data-i18n="week">за неделю</span></div>
-          <div>📈 <b id="monthVisits">4 217</b> <span data-i18n="month">за месяц</span></div>
-        </div>
-      </div>
+    <button class="tool-btn" id="btnBattery"    title="Батарейка «Крона» 9V"><span class="icon">🔋</span> Крона 9V</button>
+    <button class="tool-btn" id="btnBattery15"  title="Батарейка «AA» 1.5V"><span class="icon">🔋</span> AA 1.5V</button>
+    <button class="tool-btn" id="btnLamp"       title="Лампочка"><span class="icon">💡</span> Лампа</button>
+    <button class="tool-btn" id="btnArduino"    title="Arduino UNO"><span class="icon">🧩</span> Arduino</button>
 
-      <a href="tel:+71234567890" class="header-phone">📞 +7 (123) 456-78-90</a>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- ГЕРОЙ -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-content">
-        <div class="badge" data-i18n="badge">🛡️ Гарантия 12 месяцев</div>
-        <h1><span data-i18n="h1a">Ремонт</span> <span data-i18n="h1b">аккумулятора</span> <span data-i18n="h1c">любой сложности</span></h1>
-        <p data-i18n="hero_p">Диагностика, замена банок, восстановление ёмкости. Работаем с Li‑ion, Ni‑MH, свинцово‑кислотными.</p>
-        <a href="#form" class="btn-primary" data-i18n="btn_form">📞 Оставить заявку</a>
-        <div class="hero-stats">
-          <div data-i18n="stat1">✅ 1500+ работ выполнено</div>
-          <div data-i18n="stat2">⏱️ Срочный ремонт за 2 ч</div>
-        </div>
-      </div>
-      <div class="hero-image">
-        <svg width="240" height="200" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="18" width="70" height="54" rx="8" fill="#c0392b" opacity="0.15"/>
-          <rect x="14" y="22" width="62" height="46" rx="6" fill="#c0392b" opacity="0.25"/>
-          <rect x="20" y="28" width="12" height="34" rx="3" fill="#c0392b"/>
-          <rect x="38" y="28" width="12" height="34" rx="3" fill="#c0392b"/>
-          <rect x="56" y="28" width="12" height="34" rx="3" fill="#c0392b"/>
-          <rect x="80" y="38" width="8" height="16" rx="3" fill="#2c3e50" opacity="0.7"/>
+    <button class="tool-btn" id="btnResistor"   title="Резистор">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="32" height="18" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0"  y1="9" x2="5"  y2="9" stroke="#7f8c8d" stroke-width="2.4" stroke-linecap="round"/>
+          <rect x="5" y="4" width="22" height="10" rx="2" fill="#e8d5a8" stroke="#b0987a" stroke-width="1.2"/>
+          <rect x="8.2"  y="5" width="2" height="8" fill="#c0392b"/>
+          <rect x="14.8" y="5" width="2" height="8" fill="#27ae60"/>
+          <rect x="21.4" y="5" width="2" height="8" fill="#d4ac0d"/>
+          <line x1="27" y1="9" x2="32" y2="9" stroke="#7f8c8d" stroke-width="2.4" stroke-linecap="round"/>
         </svg>
-      </div>
-    </div>
-  </section>
+      </span>
+      Резистор
+    </button>
 
-  <!-- УСЛУГИ -->
-  <div class="container">
-    <div class="section-title">🛠️ <span data-i18n="services_title">Что мы восстанавливаем</span></div>
-    <div class="card-grid">
-      <div class="service-card"><span class="emoji">💻</span><h3 data-i18n="s1t">Ноутбуки</h3><p data-i18n="s1p">Замена ячеек, ремонт контроллера</p></div>
-      <div class="service-card"><span class="emoji">📱</span><h3 data-i18n="s2t">Смартфоны</h3><p data-i18n="s2p">Замена элемента, калибровка</p></div>
-      <div class="service-card"><span class="emoji">🚗</span><h3 data-i18n="s3t">Автомобильные</h3><p data-i18n="s3p">Десульфатация, обслуживание</p></div>
-      <div class="service-card"><span class="emoji">🔋</span><h3 data-i18n="s4t">ИБП / электро</h3><p data-i18n="s4p">Восстановление ёмкости, замена банок</p></div>
-    </div>
+    <button class="tool-btn" id="btnPotentiometer" title="Потенциометр">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="9" fill="#2b2b2e" stroke="#0f0f10" stroke-width="1.2"/>
+          <circle cx="11" cy="11" r="6.5" fill="none" stroke="#4a4a4c" stroke-width="1.6"/>
+          <circle cx="11" cy="11" r="3.4" fill="#8a8a8a" stroke="#3a3a3a" stroke-width="1"/>
+          <line x1="11" y1="11" x2="15.5" y2="6.5" stroke="#c9a04a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="15.5" cy="6.5" r="1.4" fill="#f1c40f"/>
+        </svg>
+      </span>
+      Потенциометр
+    </button>
+
+    <button class="tool-btn" id="btnSwitch"     title="Ключ">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="32" height="18" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="13" x2="8" y2="13" stroke="#7f8c8d" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="24" y1="13" x2="32" y2="13" stroke="#7f8c8d" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="9" cy="13" r="2.2" fill="#2c3e50"/>
+          <circle cx="23" cy="13" r="2.2" fill="#2c3e50"/>
+          <line x1="9" y1="13" x2="23" y2="3" stroke="#7f8c8d" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Ключ
+    </button>
+
+    <button class="tool-btn" id="btnMultimeter" title="Мультиметр">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="1" width="18" height="20" rx="2.5" fill="#2c3e50" stroke="#1a252f" stroke-width="1"/>
+          <rect x="3.4" y="2.4" width="15.2" height="17.2" rx="1.8" fill="none" stroke="#3d566e" stroke-width="0.8"/>
+          <rect x="4.6" y="4" width="12.8" height="5.4" rx="1" fill="#0f1720" stroke="#0a0d11" stroke-width="0.8"/>
+          <text x="11" y="8" font-size="3.4" font-weight="bold" fill="#7dffb8"
+                text-anchor="middle" font-family="Consolas, monospace">1.50</text>
+          <circle cx="7"  cy="14" r="1.7" fill="#1abc9c" stroke="#16a085" stroke-width="0.6"/>
+          <circle cx="11" cy="14" r="1.7" fill="#22303d" stroke="#0d1319" stroke-width="0.6"/>
+          <circle cx="15" cy="14" r="1.7" fill="#22303d" stroke="#0d1319" stroke-width="0.6"/>
+          <text x="7"  y="15.1" font-size="2.6" font-weight="bold" fill="#ffffff"
+                text-anchor="middle" font-family="system-ui, sans-serif">V</text>
+          <text x="11" y="15.1" font-size="2.6" font-weight="bold" fill="#95a5a6"
+                text-anchor="middle" font-family="system-ui, sans-serif">A</text>
+          <text x="15" y="15.1" font-size="2.6" font-weight="bold" fill="#95a5a6"
+                text-anchor="middle" font-family="system-ui, sans-serif">Ω</text>
+          <line x1="7" y1="20" x2="7" y2="22" stroke="#e74c3c" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="15" y1="20" x2="15" y2="22" stroke="#2a2a2c" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Мультиметр
+    </button>
+
+    <!-- ★★★ IRF540N ★★★ -->
+    <button class="tool-btn" id="btnMosfet" title="Полевой транзистор IRF540N">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="24" height="26" viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="1" width="18" height="6" rx="1" fill="#c8c8c8" stroke="#666" stroke-width="0.8"/>
+          <circle cx="12" cy="4" r="1.6" fill="#fff" stroke="#666" stroke-width="0.7"/>
+          <rect x="4" y="7" width="16" height="11" rx="1.2" fill="#1e1e1e" stroke="#0a0a0a" stroke-width="1"/>
+          <text x="12" y="12.5" text-anchor="middle" font-size="3.6" font-weight="bold"
+                fill="#e8e8e8" font-family="system-ui, sans-serif">IRF540N</text>
+          <line x1="12" y1="14" x2="12" y2="17" stroke="#cccccc" stroke-width="0.9"/>
+          <line x1="9"  y1="14.5" x2="9" y2="16.5" stroke="#cccccc" stroke-width="0.9"/>
+          <line x1="10" y1="14.5" x2="12" y2="14.5" stroke="#cccccc" stroke-width="0.9"/>
+          <line x1="10" y1="16.5" x2="12" y2="16.5" stroke="#cccccc" stroke-width="0.9"/>
+          <rect x="6"  y="18" width="2" height="7" fill="#b8b8b8" stroke="#777" stroke-width="0.5"/>
+          <rect x="11" y="18" width="2" height="7" fill="#b8b8b8" stroke="#777" stroke-width="0.5"/>
+          <rect x="16" y="18" width="2" height="7" fill="#b8b8b8" stroke="#777" stroke-width="0.5"/>
+        </svg>
+      </span>
+      IRF540N
+    </button>
+
+    <!-- ★★★ 7-сегментный дисплей ★★★ -->
+    <button class="tool-btn" id="btnSevenSegment" title="Семисегментный дисплей">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="18" height="18" rx="2" fill="#0f0f10" stroke="#2a2a2c" stroke-width="1"/>
+          <rect x="6"    y="4.5"  width="10"  height="1.6" rx="0.8" fill="#ff2d1a"/>
+          <rect x="16.2" y="6.5"  width="1.6" height="4"   rx="0.8" fill="#2a0d0d"/>
+          <rect x="16.2" y="11.5" width="1.6" height="4"   rx="0.8" fill="#2a0d0d"/>
+          <rect x="6"    y="15.9" width="10"  height="1.6" rx="0.8" fill="#2a0d0d"/>
+          <rect x="4.2"  y="11.5" width="1.6" height="4"   rx="0.8" fill="#2a0d0d"/>
+          <rect x="4.2"  y="6.5"  width="1.6" height="4"   rx="0.8" fill="#2a0d0d"/>
+          <rect x="6"    y="10.2" width="10"  height="1.6" rx="0.8" fill="#2a0d0d"/>
+          <circle cx="17.5" cy="17.5" r="0.9" fill="#2a0d0d"/>
+        </svg>
+      </span>
+      Дисплей 7сег.
+    </button>
+
+    <!-- ★★★ Реле ★★★ -->
+    <button class="tool-btn" id="btnRelay" title="Электромагнитное реле">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="24" height="22" viewBox="0 0 24 22" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="3" width="20" height="16" rx="2" fill="#2b2b2e" stroke="#0f0f10" stroke-width="1"/>
+          <rect x="4" y="6" width="6" height="10" rx="1" fill="#b87333" stroke="#6a3d10" stroke-width="0.8"/>
+          <line x1="5" y1="8"  x2="9" y2="8"  stroke="#f0c080" stroke-width="0.6"/>
+          <line x1="5" y1="10" x2="9" y2="10" stroke="#f0c080" stroke-width="0.6"/>
+          <line x1="5" y1="12" x2="9" y2="12" stroke="#f0c080" stroke-width="0.6"/>
+          <line x1="5" y1="14" x2="9" y2="14" stroke="#f0c080" stroke-width="0.6"/>
+          <circle cx="14" cy="11" r="1.4" fill="#c9a04a"/>
+          <circle cx="19" cy="7"  r="1.4" fill="#7a7a7a"/>
+          <circle cx="19" cy="15" r="1.4" fill="#c9a04a"/>
+          <line x1="14" y1="11" x2="18" y2="15" stroke="#c8c8c8" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Реле
+    </button>
+
+    <!-- ★★★ Пьезодинамик ★★★ -->
+    <button class="tool-btn" id="btnBuzzer" title="Пьезодинамик">
+      <span class="icon" style="display:inline-flex;align-items:center;">
+        <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="9" fill="#2a2a2c" stroke="#0f0f10" stroke-width="1.2"/>
+          <circle cx="11" cy="11" r="6.5" fill="none" stroke="#4a4a4c" stroke-width="1.6"/>
+          <circle cx="11" cy="11" r="3" fill="#0a0a0a" stroke="#3a3a3c" stroke-width="1"/>
+          <path d="M 3.5 5 Q 1.5 11 3.5 17" fill="none" stroke="#f1c40f" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M 18.5 5 Q 20.5 11 18.5 17" fill="none" stroke="#f1c40f" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Динамик
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="tool-btn" id="btnSketch" title="Arduino IDE">
+      <span class="icon">📝</span> Скетч
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="tool-btn" id="btnNew"    title="Новая схема (Ctrl+N)"><span class="icon">📄</span> Новая</button>
+    <button class="tool-btn" id="btnOpen"   title="Открыть (Ctrl+O)"><span class="icon">📂</span> Открыть</button>
+    <button class="tool-btn" id="btnSave"   title="Сохранить (Ctrl+S)"><span class="icon">💾</span> Сохранить</button>
+    <button class="tool-btn" id="btnSaveAs" title="Сохранить как…"><span class="icon">💾</span> Сохранить как…</button>
+
+    <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+
+    <div class="divider"></div>
+
+    <button class="tool-btn danger" id="btnClear"><span class="icon">🗑</span> Очистить</button>
+    <button class="tool-btn" id="btnGrid"><span class="icon">▦</span> Сетка: вкл</button>
+    <button class="tool-btn" id="btnOrtho"><span class="icon">∠</span> Ортогональные: выкл</button>
+    <button class="tool-btn" id="btnSnap"><span class="icon">⌖</span> Магнит узлов: выкл</button>
+
+    <button class="tool-btn run-btn" id="btnSim"><span class="icon">▶</span> Запустить моделирование</button>
   </div>
 
-  <!-- ПОЧЕМУ ВЫБИРАЮТ НАС -->
-  <div class="container">
-    <div class="benefits">
-      <div class="section-title">⭐ <span data-i18n="benefits_title">Почему выбирают нас</span></div>
-      <div class="benefits-list">
-        <div class="benefit-item"><span class="emoji">🔬</span><div><h4 data-i18n="b1t">Точная диагностика</h4><p data-i18n="b1p">Бесплатно определяем причину</p></div></div>
-        <div class="benefit-item"><span class="emoji">🔄</span><div><h4 data-i18n="b2t">Оригинальные компоненты</h4><p data-i18n="b2p">Panasonic, Samsung, LG</p></div></div>
-        <div class="benefit-item"><span class="emoji">🛡️</span><div><h4 data-i18n="b3t">Гарантия на работу</h4><p data-i18n="b3p">до 18 месяцев</p></div></div>
-        <div class="benefit-item"><span class="emoji">⚡</span><div><h4 data-i18n="b4t">Скорость</h4><p data-i18n="b4p">Срочный ремонт от 2 часов</p></div></div>
+  <!-- ===================== РАБОЧЕЕ ПОЛЕ ===================== -->
+  <div class="canvas-wrap">
+    <canvas id="canvas" tabindex="0"></canvas>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <!-- Панель свойств компонента -->
+    <div class="props-panel" id="propsPanel">
+      <div class="props-header" id="propsHeader">
+        <span class="drag-handle">⋮⋮</span>
+        <span class="title-text" id="propsTitle">Настройки</span>
+        <button class="props-close" id="propsClose">✕</button>
       </div>
+      <div class="props-body" id="propsBody"></div>
     </div>
-  </div>
 
-  <!-- ОТЗЫВЫ -->
-  <div class="container chat-section">
-    <div class="section-title">💬 <span data-i18n="reviews_title">Отзывы клиентов</span></div>
-    <p class="chat-subtitle" data-i18n="reviews_sub">Реальные переписки из нашего мессенджера и отзывы с Авито. Имена — как на площадке.</p>
+    <!-- ===================== Arduino IDE ===================== -->
+    <div class="sketch-panel" id="sketchPanel">
 
-    <div class="chat-grid">
-
-      <!-- ОТЗЫВЫ С АВИТО -->
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar teal">Д</div>
-          <div class="chat-who"><div class="name">Дмитрий</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">15 сентября</span></div>
-          <div class="msg service">Спасибо за отзыв! Рады, что всё работает 🙌<span class="time">15 сентября</span></div>
-          <div class="msg client">Восстановил аккумулятор от самоката Midway, цена оказалась очень хорошей, всё отлично 👍<span class="time">15 сентября</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Ремонт АКБ самоката Midway</div>
+      <div class="sketch-header" id="sketchHeader">
+        <span class="drag-handle">⋮⋮</span>
+        <span class="title-text">📝 Arduino IDE — C++ скетч</span>
+        <button class="props-close" id="sketchClose" title="Закрыть (Esc)">✕</button>
       </div>
 
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar indigo">И</div>
-          <div class="chat-who"><div class="name">Ильдар Исхаков</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">6 сентября</span></div>
-          <div class="msg service">Благодарим за доверие! Обращайтесь 😊<span class="time">6 сентября</span></div>
-          <div class="msg client">Рекомендую ✅<span class="time">6 сентября</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Ремонт аккумуляторов</div>
+      <div class="sketch-toolbar">
+        <button class="tool-btn" id="sketchVerify" title="Проверить код (компиляция)">
+          <span class="icon">✓</span> Проверить
+        </button>
+        <button class="tool-btn" id="sketchRun" title="Загрузить и запустить в симуляторе">
+          <span class="icon">⬆</span> Загрузить
+        </button>
+        <button class="tool-btn" id="sketchStop" disabled title="Остановить выполнение">
+          <span class="icon">⏹</span> Остановить
+        </button>
+
+        <div class="separator"></div>
+
+        <label for="sketchBoard">Плата:</label>
+        <select id="sketchBoard">
+          <option value="Arduino Uno" selected>Arduino Uno</option>
+          <option value="Arduino Nano">Arduino Nano</option>
+          <option value="Arduino Mega 2560">Arduino Mega 2560</option>
+          <option value="ESP32 Dev Module">ESP32 Dev Module</option>
+          <option value="ESP8266 NodeMCU">ESP8266 NodeMCU</option>
+        </select>
+
+        <div class="separator"></div>
+
+        <button class="tool-btn secondary" id="sketchExample" title="Загрузить пример">
+          <span class="icon">📋</span> Пример
+        </button>
+        <button class="tool-btn secondary" id="sketchClearConsole" title="Очистить консоль">
+          <span class="icon">🗑</span> Очистить
+        </button>
       </div>
 
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar green">Н</div>
-          <div class="chat-who"><div class="name">Наиль</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
+      <div class="sketch-main">
+        <div class="sketch-editor-wrap">
+          <div class="sketch-editor-header">
+            <span class="file-name" id="sketchFileName">sketch.ino</span>
+            <span class="board-info" id="sketchBoardInfo">Плата: Arduino Uno</span>
+          </div>
+          <!-- Контейнер Monaco Editor -->
+          <div id="sketchEditor"></div>
+          <!-- Скрытый textarea для fallback (без Monaco) -->
+          <textarea id="sketchCode" spellcheck="false" style="display:none"></textarea>
         </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">21 августа</span></div>
-          <div class="msg service">Спасибо! Всегда рады помочь 🔋<span class="time">21 августа</span></div>
-          <div class="msg client">Все как обговаривали! Спасибо за работу?<span class="time">21 августа</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Ремонт аккумуляторов</div>
       </div>
 
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar red">В</div>
-          <div class="chat-who"><div class="name">Влад Гар</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
+      <div class="sketch-console-wrap">
+        <div class="sketch-console-header">
+          <span>Консоль</span>
+          <span class="sub">вывод компилятора и Serial</span>
         </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">3 августа</span></div>
-          <div class="msg service">Спасибо за отзыв! Приятно слышать 🙏<span class="time">3 августа</span></div>
-          <div class="msg client">Спасибо, всё сделано быстро и качественно, была замена АКБ на пылесосе.<span class="time">3 августа</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Замена АКБ пылесоса</div>
+        <div class="sketch-console" id="sketchConsole"></div>
       </div>
 
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar orange">А</div>
-          <div class="chat-who"><div class="name">Антон</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">25 июля</span></div>
-          <div class="msg service">Спасибо! Ждём снова 👋<span class="time">25 июля</span></div>
-          <div class="msg client">Всё быстро и отлично 👍 рекомендую<span class="time">25 июля</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Ремонт аккумуляторов</div>
+      <div class="sketch-statusbar">
+        <span class="status-text" id="sketchStatus">Готов</span>
+        <span class="version">Arduino Web IDE v1.0</span>
       </div>
 
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar blue">Д</div>
-          <div class="chat-who"><div class="name">Детские электромобили</div><div class="status" data-i18n="avito_status">Клиент · Авито</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Сделка состоялась · Ремонт аккумуляторов, переделка шуруповерт, пылесос<span class="time">17 июля</span></div>
-          <div class="msg service">Спасибо большое! Успехов в делах 🚗<span class="time">17 июля</span></div>
-          <div class="msg client">Починили детский электромобиль за что премного благодарен, и очень недорого, теперь знаю к кому ехать в случае чего по разным вопросам :)<span class="time">17 июля</span></div>
-        </div>
-        <div class="chat-footer"><span class="avito-mark" data-i18n="avito_mark">✅ Отзыв с Авито</span> · Ремонт детского электромобиля</div>
-      </div>
-
-      <!-- ОТЗЫВЫ ИЗ МЕССЕНДЖЕРА -->
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar red">🕷️</div>
-          <div class="chat-who"><div class="name">Питер П.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Ребят, привет! Ноут после «фотки с пауком» вообще перестал держать заряд 😅<span class="time">10:02</span></div>
-          <div class="msg service">Здравствуйте! Приносите, посмотрим. Паучье чутьё подсказывает — одна банка умерла 😉<span class="time">10:03</span></div>
-          <div class="msg client">С большой силой приходит большая ответственность... за аккумулятор 😂<span class="time">10:05</span></div>
-          <div class="msg service">Забрали, ячейку заменили, ёмкость 100%. Готово ✅<span class="time">12:40</span></div>
-          <div class="msg client">Вау, быстрее, чем я по стенкам лазаю. Спасибо, дядя Бен одобрил бы 🙌<span class="time">12:41</span></div>
-        </div>
-        <div class="chat-footer">Ремонт MacBook Air · 15.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar purple">🎸</div>
-          <div class="chat-who"><div class="name">Гвен С.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Привет! Барабанная палочка упала на телефон, экран цел, а батарея вздулась 😭<span class="time">18:11</span></div>
-          <div class="msg service">Ого, сочувствуем! Приносите — заменим элемент, проверим контроллер.<span class="time">18:12</span></div>
-          <div class="msg client">А если я в маске приду — не смутитесь? 🕸️<span class="time">18:13</span></div>
-          <div class="msg service">У нас тут все немножко супергерои. Приходите в чём удобно 😄<span class="time">18:14</span></div>
-          <div class="msg client">Телефон как новый! Паучье чутьё говорит: сервис топ 🕷️💚<span class="time">вчера</span></div>
-        </div>
-        <div class="chat-footer">Замена аккумулятора iPhone 13 · 14.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar dark">🖤</div>
-          <div class="chat-who"><div class="name">Майлз М.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Йо! Кто-нибудь может оживить повербанк? Он сдох прямо на крыше 😅<span class="time">14:20</span></div>
-          <div class="msg service">Конечно! Что случилось?<span class="time">14:21</span></div>
-          <div class="msg client">Ну... я прыгал, он выпал. Десульфатация спасёт?<span class="time">14:22</span></div>
-          <div class="msg service">Спасём. Но прыгать с ним больше не советуем 😉<span class="time">14:23</span></div>
-          <div class="msg client">Ладно-ладно, буду как все — на метро 🚇 Спасибо, ребята!<span class="time">16:05</span></div>
-        </div>
-        <div class="chat-footer">Ремонт power bank · 13.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar orange">🌹</div>
-          <div class="chat-who"><div class="name">Мэри Джейн У.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Добрый день! Ноутбук греется и выключается. Видимо, из-за жары?<span class="time">09:40</span></div>
-          <div class="msg service">Скорее всего аккумулятор. Приносите — за 2 часа всё сделаем.<span class="time">09:41</span></div>
-          <div class="msg client">Ой, а можно срочно? У меня завтра выступление 🎤<span class="time">09:42</span></div>
-          <div class="msg service">Уже взяли в работу. К вечеру заберёте. С большой силой — большая скорость 😄<span class="time">09:43</span></div>
-          <div class="msg client">Вы супергерои! Спасибо огромное 🕷️❤️<span class="time">17:30</span></div>
-        </div>
-        <div class="chat-footer">Ремонт MacBook Pro · 12.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar green">🍪</div>
-          <div class="chat-who"><div class="name">Мэй П.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Милые, у меня старый автомобильный аккумулятор. Совсем не держит.<span class="time">11:15</span></div>
-          <div class="msg service">Здравствуйте! Привозите, проведём десульфатацию, замерим ёмкость.<span class="time">11:16</span></div>
-          <div class="msg client">А то мой племянник вечно влипает в истории, вдруг пригодится 🕸️<span class="time">11:17</span></div>
-          <div class="msg service">Пусть пригодится! Работает как новый ✅<span class="time">14:50</span></div>
-          <div class="msg client">Спасибо, пеку вам печенье 🍪 Приду с племянником!<span class="time">14:52</span></div>
-        </div>
-        <div class="chat-footer">Восстановление АКБ · 11.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar blue">📸</div>
-          <div class="chat-who"><div class="name">Нед Л.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★☆</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Привет. Дрон не держит заряд, снимаю на него город сверху 📷<span class="time">16:00</span></div>
-          <div class="msg service">Здравствуйте! Батарея Li‑Po? Приносите — заменим банки.<span class="time">16:01</span></div>
-          <div class="msg client">А то мне одна газета вечно палки в колёса ставит... 😅<span class="time">16:02</span></div>
-          <div class="msg service">Тут мы бессильны 😄 А вот батарею починим за 1 день.<span class="time">16:03</span></div>
-          <div class="msg client">Дрон летает! Фотки — топ. Спасибо, мужики ✌️<span class="time">на выходных</span></div>
-        </div>
-        <div class="chat-footer">Ремонт дрона · 10.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar red">😈</div>
-          <div class="chat-who"><div class="name">Норман О.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">У меня тут глайдер на аккумуляторах. Разряжается за 5 минут ⚡<span class="time">20:11</span></div>
-          <div class="msg service">Приносите, заменим банки и пересоберём сборку.<span class="time">20:12</span></div>
-          <div class="msg client">Только без шуток про «с большой силой» 😤<span class="time">20:13</span></div>
-          <div class="msg service">Договорились. Мы вообще очень серьёзный сервис 😇<span class="time">20:14</span></div>
-          <div class="msg client">Ладно, уговорили. Летает теперь дольше. Респект 🛹<span class="time">вчера</span></div>
-        </div>
-        <div class="chat-footer">Ремонт глайдера · 09.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar dark">📰</div>
-          <div class="chat-who"><div class="name">Дж. Джона Дж.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">МНЕ НУЖЕН АККУМУЛЯТОР ДЛЯ ФОТОАППАРАТА! СРОЧНО!<span class="time">08:00</span></div>
-          <div class="msg service">Доброе утро! Уже в работе, через час будет готов 📸<span class="time">08:01</span></div>
-          <div class="msg client">И ЧТОБЫ РАБОТАЛ! Я СНИМАЮ ПАУКА, ЧЕЛОВЕКА-ПАУКА!<span class="time">08:02</span></div>
-          <div class="msg service">Сделаем в лучшем виде. Приходите — заберёте и фотоаппарат, и батарею ✅<span class="time">08:03</span></div>
-          <div class="msg client">...Ладно. Хороший сервис. Но ПАУК ВСЁ РАВНО УГРОЗА! 😤<span class="time">09:15</span></div>
-        </div>
-        <div class="chat-footer">Срочная замена батареи · 08.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar purple">🥊</div>
-          <div class="chat-who"><div class="name">Мэтт М.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Здравствуйте. Не вижу проблем с аккумулятором, но чувствую, что он слабый 🤔<span class="time">21:30</span></div>
-          <div class="msg service">Приносите — диагностика бесплатная, проверим всё до миллиампера.<span class="time">21:31</span></div>
-          <div class="msg client">Хорошо. У меня, знаете, обострённое чувство справедливости и дешёвых батарей 😄<span class="time">21:32</span></div>
-          <div class="msg service">У нас так же. Всё по-честному — гарантия 18 месяцев.<span class="time">21:33</span></div>
-          <div class="msg client">Отличный сервис. Чувствую себя в безопасности ⚖️<span class="time">сегодня</span></div>
-        </div>
-        <div class="chat-footer">Диагностика · 07.02.2026</div>
-      </div>
-
-      <div class="chat-card">
-        <div class="chat-header">
-          <div class="chat-avatar dark">🖤</div>
-          <div class="chat-who"><div class="name">Эдди Б.</div><div class="status" data-i18n="online_status">в сети</div></div>
-          <div class="rating">★★★★★</div>
-        </div>
-        <div class="chat-body">
-          <div class="msg client">Мы... то есть я... сломал зарядку. И ещё восемь штук 😅<span class="time">23:50</span></div>
-          <div class="msg service">Ничего себе! Приносите — сделаем. По оптовой цене 😉<span class="time">23:51</span></div>
-          <div class="msg client">Мой внутренний голос говорит, что вы лучшие 🖤<span class="time">23:52</span></div>
-          <div class="msg service">Мы польщены! Всё починим, обещаем без эксцессов.<span class="time">23:53</span></div>
-          <div class="msg client">Спасибо. Батареи теперь не жрём. Только шоколад 🍫<span class="time">сегодня</span></div>
-        </div>
-        <div class="chat-footer">Срочный ремонт · 06.02.2026</div>
-      </div>
     </div>
   </div>
 
-  <!-- ФОРМА -->
-  <div class="container" id="form">
-    <div class="form-section">
-      <div class="section-title">✉️ <span data-i18n="form_title">Оставьте заявку</span></div>
-      <p class="form-subtitle" data-i18n="form_sub">Заполните форму — письмо уйдёт прямо на нашу почту. Ответим в течение 15 минут.</p>
-
-      <form class="form-grid" action="https://formsubmit.co/YOUR_EMAIL@example.com" method="POST" id="contactForm">
-        <input type="hidden" name="_subject" value="Новая заявка с сайта Аккумулятор+">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_template" value="table">
-
-        <div class="form-field">
-          <label for="name" data-i18n="f_name">Ваше имя</label>
-          <input type="text" id="name" name="Имя" placeholder="Например, Алексей" data-i18n-ph="f_name_ph" required>
-        </div>
-
-        <div class="form-field">
-          <label for="phone" data-i18n="f_phone">Телефон</label>
-          <input type="tel" id="phone" name="Телефон" placeholder="+7 (___) ___-__-__" required>
-        </div>
-
-        <div class="form-field full">
-          <label for="device" data-i18n="f_device">Что нужно починить</label>
-          <input type="text" id="device" name="Устройство" placeholder="Например, аккумулятор от ноутбука MacBook Air" data-i18n-ph="f_device_ph">
-        </div>
-
-        <div class="form-field full">
-          <label for="message" data-i18n="f_msg">Комментарий (необязательно)</label>
-          <textarea id="message" name="Сообщение" placeholder="Опишите проблему" data-i18n-ph="f_msg_ph"></textarea>
-        </div>
-
-        <div class="form-submit">
-          <button type="submit" data-i18n="f_submit">✉️ Отправить заявку</button>
-        </div>
-
-        <div class="form-note">
-          <span data-i18n="f_note">🔒 Данные защищены. Или напишите напрямую:</span>
-          <a href="mailto:info@akkum-service.ru?subject=Заявка%20на%20ремонт">info@akkum-service.ru</a>
-        </div>
-
-        <div class="form-success" id="formSuccess" data-i18n="f_success">
-          ✅ Спасибо! Заявка отправлена. Мы свяжемся с вами в течение 15 минут.
-        </div>
-      </form>
-    </div>
+  <!-- ===================== НИЖНИЙ СТАТУСБАР ===================== -->
+  <div class="statusbar">
+    <span class="hint" id="status">
+      Двойной клик по элементу — настройки. ПКМ — поворот. R — поворот на 90°.
+      O — ортогональные провода. M — магнит узлов. Ctrl+колесо — масштаб. СКМ — панорамирование.
+      Alt+клик по реле — ручной форсаж.
+    </span>
   </div>
 
-  <!-- КОНТАКТЫ -->
-  <div class="container">
-    <div class="contact-block">
-      <div>
-        <h2 data-i18n="contact_title">⚡ Свяжитесь с нами</h2>
-        <p data-i18n="contact_p">Ответим на звонок или письмо в течение 15 минут</p>
-      </div>
-      <div class="contact-actions">
-        <a href="tel:+71234567890" class="call" data-i18n="contact_call">📞 Позвонить</a>
-        <a href="mailto:info@akkum-service.ru?subject=Запрос%20на%20ремонт" class="write" data-i18n="contact_write">✉️ Написать письмо</a>
-      </div>
-    </div>
-  </div>
+</div>
 
-  <div class="container" style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;background:#fff;border-radius:30px;padding:20px 28px;margin:20px 0 10px;border:1px solid #edf2f7">
-    <div data-i18n="addr">📍 Москва, ул. Техническая, 12</div>
-    <div data-i18n="hours">🕒 Ежедневно 10:00 – 21:00</div>
-    <div>✉️ info@akkum-service.ru</div>
-  </div>
-</main>
+<!-- ===================== МОДУЛИ-УТИЛИТЫ (этап 1) ===================== -->
+<script src="js/schematic/format.js"></script>
+<script src="js/schematic/geometry.js"></script>
+<script src="js/schematic/audio.js"></script>
 
-<footer class="container footer">
-  <div data-i18n="footer_c">© 2026 Аккумулятор+</div>
-  <div>📞 <a href="tel:+71234567890">+7 (123) 456-78-90</a></div>
-</footer>
+<!-- ===================== МОДУЛИ РЕШАТЕЛЯ (этап 2) ===================== -->
+<script src="js/schematic/constants.js"></script>
+<script src="js/schematic/netlist.js"></script>
+<script src="js/schematic/solver.js"></script>
+<script src="js/schematic/physics.js"></script>
 
-<script>
-/* ============================================================
-   ПЕРЕВОДЫ (RU / BA / TT)
-============================================================ */
-var TRANSLATIONS = {
-  ru: {
-    logo: "Аккумулятор+",
-    online: "Сейчас на сайте:",
-    today: "визитов сегодня",
-    week: "за неделю",
-    month: "за месяц",
-    badge: "🛡️ Гарантия 12 месяцев",
-    h1a: "Ремонт", h1b: "аккумулятора", h1c: "любой сложности",
-    hero_p: "Диагностика, замена банок, восстановление ёмкости. Работаем с Li‑ion, Ni‑MH, свинцово‑кислотными.",
-    btn_form: "📞 Оставить заявку",
-    stat1: "✅ 1500+ работ выполнено",
-    stat2: "⏱️ Срочный ремонт за 2 ч",
-    services_title: "Что мы восстанавливаем",
-    s1t: "Ноутбуки", s1p: "Замена ячеек, ремонт контроллера",
-    s2t: "Смартфоны", s2p: "Замена элемента, калибровка",
-    s3t: "Автомобильные", s3p: "Десульфатация, обслуживание",
-    s4t: "ИБП / электро", s4p: "Восстановление ёмкости, замена банок",
-    benefits_title: "Почему выбирают нас",
-    b1t: "Точная диагностика", b1p: "Бесплатно определяем причину",
-    b2t: "Оригинальные компоненты", b2p: "Panasonic, Samsung, LG",
-    b3t: "Гарантия на работу", b3p: "до 18 месяцев",
-    b4t: "Скорость", b4p: "Срочный ремонт от 2 часов",
-    reviews_title: "Отзывы клиентов",
-    reviews_sub: "Реальные переписки из нашего мессенджера и отзывы с Авито. Имена — как на площадке.",
-    avito_status: "Клиент · Авито",
-    online_status: "в сети",
-    avito_mark: "✅ Отзыв с Авито",
-    form_title: "Оставьте заявку",
-    form_sub: "Заполните форму — письмо уйдёт прямо на нашу почту. Ответим в течение 15 минут.",
-    f_name: "Ваше имя", f_name_ph: "Например, Алексей",
-    f_phone: "Телефон",
-    f_device: "Что нужно починить", f_device_ph: "Например, аккумулятор от ноутбука MacBook Air",
-    f_msg: "Комментарий (необязательно)", f_msg_ph: "Опишите проблему",
-    f_submit: "✉️ Отправить заявку",
-    f_note: "🔒 Данные защищены. Или напишите напрямую:",
-    f_success: "✅ Спасибо! Заявка отправлена. Мы свяжемся с вами в течение 15 минут.",
-    contact_title: "⚡ Свяжитесь с нами",
-    contact_p: "Ответим на звонок или письмо в течение 15 минут",
-    contact_call: "📞 Позвонить",
-    contact_write: "✉️ Написать письмо",
-    addr: "📍 Москва, ул. Техническая, 12",
-    hours: "🕒 Ежедневно 10:00 – 21:00",
-    footer_c: "© 2026 Аккумулятор+"
-  },
+<!-- ===================== МОДУЛИ ИСТОРИИ И ФАЙЛОВ (этап 3) ===================== -->
+<script src="js/schematic/history.js"></script>
+<script src="js/schematic/file-io.js"></script>
+<script src="js/schematic/render.js"></script>
 
-  ba: {
-    logo: "Аккумулятор+",
-    online: "Сайтта хәҙер:",
-    today: "бөгөн визит",
-    week: "аҙна эсендә",
-    month: "ай эсендә",
-    badge: "🛡️ 12 ай гарантия",
-    h1a: "Ремонт", h1b: "аккумуляторҙың", h1c: "теләһә ниндәй ҡатмарлылыҡ",
-    hero_p: "Диагностика, банкаларҙы алмаштырыу, һыйҙырышлылыҡты тергеҙеү. Li‑ion, Ni‑MH, ҡурғаш-кислоталы менән эшләйбеҙ.",
-    btn_form: "📞 Заявка ҡалдырыу",
-    stat1: "✅ 1500+ эш башҡарылды",
-    stat2: "⏱️ Ашығыс ремонт 2 сәғәттә",
-    services_title: "Беҙ нимәне тергеҙәбеҙ",
-    s1t: "Ноутбуктар", s1p: "Өйәнәләрҙе алмаштырыу, контроллерҙы ремонтлау",
-    s2t: "Смартфондар", s2p: "Элементты алмаштырыу, калибровка",
-    s3t: "Автомобиль", s3p: "Десульфатация, хеҙмәтләндереү",
-    s4t: "ИБП / электро", s4p: "Һыйҙырышлылыҡты тергеҙеү, банкаларҙы алмаштырыу",
-    benefits_title: "Ниңә беҙҙе һайлайҙар",
-    b1t: "Аныҡ диагностика", b1p: "Сәбәбен бушлай билдәләйбеҙ",
-    b2t: "Оригиналь компоненттар", b2p: "Panasonic, Samsung, LG",
-    b3t: "Эшкә гарантия", b3p: "18 айға тиклем",
-    b4t: "Тиҙлек", b4p: "Ашығыс ремонт 2 сәғәттән",
-    reviews_title: "Клиенттар фекерҙәре",
-    reviews_sub: "Беҙҙең мессенджерҙан ысын хаттар һәм Авито фекерҙәре. Исемдәр — майҙансыҡтағы кеүек.",
-    avito_status: "Клиент · Авито",
-    online_status: "селтәрҙә",
-    avito_mark: "✅ Авито фекере",
-    form_title: "Заявка ҡалдырығыҙ",
-    form_sub: "Форманы тултырығыҙ — хат туранан-тура беҙҙең почтаға китә. 15 минут эсендә яуап бирәбеҙ.",
-    f_name: "Исемегеҙ", f_name_ph: "Мәҫәлән, Алексей",
-    f_phone: "Телефон",
-    f_device: "Нимәне ремонтларға кәрәк", f_device_ph: "Мәҫәлән, MacBook Air аккумуляторы",
-    f_msg: "Иҫкәрмә (мотлаҡ түгел)", f_msg_ph: "Проблеманы һүрәтләгеҙ",
-    f_submit: "✉️ Заявка ебәреү",
-    f_note: "🔒 Мәғлүмәттәр һаҡланған. Йәки туранан-тура яҙығыҙ:",
-    f_success: "✅ Рәхмәт! Заявка ебәрелде. 15 минут эсендә бәйләнешәбеҙ.",
-    contact_title: "⚡ Беҙҙең менән бәйләнеш",
-    contact_p: "Шылтыратыуға йәки хатҡа 15 минут эсендә яуап бирәбеҙ",
-    contact_call: "📞 Шылтыратыу",
-    contact_write: "✉️ Хат яҙыу",
-    addr: "📍 Мәскәү, Техническая урамы, 12",
-    hours: "🕒 Көн һайын 10:00 – 21:00",
-    footer_c: "© 2026 Аккумулятор+"
-  },
+<!-- ===================== ПАНЕЛИ (этап 4) ===================== -->
+<script src="js/schematic/props-panel.js"></script>
+<script src="js/schematic/sketch-panel.js"></script>
 
-  tt: {
-    logo: "Аккумулятор+",
-    online: "Сайтта хәзер:",
-    today: "бүген визит",
-    week: "атна эчендә",
-    month: "ай эчендә",
-    badge: "🛡️ 12 ай гарантия",
-    h1a: "Ремонт", h1b: "аккумуляторның", h1c: "теләсә нинди катлаулылык",
-    hero_p: "Диагностика, банкаларны алмаштыру, сыйдырышлылыкны торгызу. Li‑ion, Ni‑MH, кургашын-кислоталы белән эшлибез.",
-    btn_form: "📞 Гариза калдыру",
-    stat1: "✅ 1500+ эш башкарылды",
-    stat2: "⏱️ Ашыгыч ремонт 2 сәгатьтә",
-    services_title: "Без нәрсәне торгызабыз",
-    s1t: "Ноутбуклар", s1p: "Күзәнәкләрне алмаштыру, контроллерны ремонтлау",
-    s2t: "Смартфоннар", s2p: "Элементны алмаштыру, калибровка",
-    s3t: "Автомобиль", s3p: "Десульфатация, хезмәт күрсәтү",
-    s4t: "ИБП / электро", s4p: "Сыйдырышлылыкны торгызу, банкаларны алмаштыру",
-    benefits_title: "Ник безне сайлыйлар",
-    b1t: "Төгәл диагностика", b1p: "Сәбәбен бушлай билгелибез",
-    b2t: "Оригиналь компонентлар", b2p: "Panasonic, Samsung, LG",
-    b3t: "Эшкә гарантия", b3p: "18 айга кадәр",
-    b4t: "Тизлек", b4p: "Ашыгыч ремонт 2 сәгатьтән",
-    reviews_title: "Клиентлар фикерләре",
-    reviews_sub: "Безнең мессенджердан чын хатлар һәм Авито фикерләре. Исемнәр — мәйданчыктагы кебек.",
-    avito_status: "Клиент · Авито",
-    online_status: "челтәрдә",
-    avito_mark: "✅ Авито фикере",
-    form_title: "Гариза калдырыгыз",
-    form_sub: "Форманы тутырыгыз — хат турыдан-туры безнең почтага китә. 15 минут эчендә җавап бирәбез.",
-    f_name: "Исемегез", f_name_ph: "Мәсәлән, Алексей",
-    f_phone: "Телефон",
-    f_device: "Нәрсәне ремонтларга кирәк", f_device_ph: "Мәсәлән, MacBook Air аккумуляторы",
-    f_msg: "Искәрмә (мәҗбүри түгел)", f_msg_ph: "Проблеманы тасвирлагыз",
-    f_submit: "✉️ Гариза җибәрү",
-    f_note: "🔒 Мәгълүматлар сакланган. Яки турыдан-туры языгыз:",
-    f_success: "✅ Рәхмәт! Гариза җибәрелде. 15 минут эчендә бәйләнешәбез.",
-    contact_title: "⚡ Безнең белән бәйләнеш",
-    contact_p: "Шалтыратуга яки хатка 15 минут эчендә җавап бирәбез",
-    contact_call: "📞 Шалтырату",
-    contact_write: "✉️ Хат язу",
-    addr: "📍 Мәскәү, Техническая урамы, 12",
-    hours: "🕒 Көн саен 10:00 – 21:00",
-    footer_c: "© 2026 Аккумулятор+"
-  }
-};
+<!-- ===================== КОМПОНЕНТЫ СХЕМЫ ===================== -->
+<script src="js/battery.js"></script>
+<script src="js/battery15.js"></script>
+<script src="js/lamp.js"></script>
+<script src="js/led.js"></script>
+<script src="js/resistor.js"></script>
+<script src="js/potentiometer.js"></script>
+<script src="js/switch.js"></script>
+<script src="js/multimeter.js"></script>
+<script src="js/mosfet.js"></script>
+<script src="js/sevensegment.js"></script>
+<script src="js/relay.js"></script>
+<script src="js/buzzer.js"></script>
+<script src="js/wire.js"></script>
+<script src="js/arduino.js"></script>
 
-/* ============================================================
-   ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА
-============================================================ */
-function setLang(lang) {
-  if (!TRANSLATIONS[lang]) lang = 'ru';
+<!-- ===================== СВЯЗЬ ПИНОВ С КОМПОНЕНТАМИ ===================== -->
+<script src="js/arduino-board.js"></script>
 
-  document.querySelectorAll('[data-i18n]').forEach(function(el){
-    var key = el.getAttribute('data-i18n');
-    if (TRANSLATIONS[lang][key] !== undefined) {
-      el.textContent = TRANSLATIONS[lang][key];
-    }
-  });
+<!-- ===================== КОМПИЛЯТОР И ИНТЕРПРЕТАТОР C++ ===================== -->
+<script src="js/arduino-compiler.js"></script>
+<script src="js/arduino-interpreter.js"></script>
+<script src="js/arduino-runtime.js"></script>
 
-  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){
-    var key = el.getAttribute('data-i18n-ph');
-    if (TRANSLATIONS[lang][key] !== undefined) {
-      el.setAttribute('placeholder', TRANSLATIONS[lang][key]);
-    }
-  });
+<!-- ===================== ЗВУК ДИНАМИКА ===================== -->
+<script src="js/buzzer-runtime.js"></script>
 
-  document.querySelectorAll('.lang-switch button').forEach(function(btn){
-    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-  });
+<!-- ===================== MONACO EDITOR (загрузчик) ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
 
-  document.documentElement.setAttribute('lang', lang);
+<!-- ===================== ОСНОВНАЯ ЛОГИКА ===================== -->
+<script src="js/main.js"></script>
 
-  try { localStorage.setItem('akkum_lang', lang); } catch (e) {}
-}
-
-(function(){
-  var saved = 'ru';
-  try { saved = localStorage.getItem('akkum_lang') || 'ru'; } catch (e) {}
-  setLang(saved);
-})();
-
-/* ============================================================
-   ОНЛАЙН-СЧЁТЧИК
-============================================================ */
-(function(){
-  var storageKey = 'akkum_counter_data';
-  var now = new Date();
-  var data;
-  try { data = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch (e) { data = null; }
-
-  if (!data || !data.date || data.date !== now.toDateString()) {
-    data = {
-      date: now.toDateString(),
-      today: Math.floor(Math.random() * 60) + 110,
-      week:  Math.floor(Math.random() * 200) + 950,
-      month: Math.floor(Math.random() * 800) + 3900,
-      online: Math.floor(Math.random() * 5) + 5
-    };
-    try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch (e) {}
-  }
-
-  var elToday = document.getElementById('todayVisits');
-  var elWeek  = document.getElementById('weekVisits');
-  var elMonth = document.getElementById('monthVisits');
-  var elNow   = document.getElementById('onlineNow');
-
-  if (elToday) elToday.textContent = data.today.toLocaleString('ru-RU');
-  if (elWeek)  elWeek.textContent  = data.week.toLocaleString('ru-RU');
-  if (elMonth) elMonth.textContent = data.month.toLocaleString('ru-RU');
-  if (elNow)   elNow.textContent   = data.online;
-
-  if (elNow) {
-    setInterval(function(){
-      var delta = Math.floor(Math.random() * 5) - 2;
-      var next = Math.max(3, Math.min(15, data.online + delta));
-      if (next !== data.online) {
-        data.online = next;
-        elNow.textContent = next;
-        elNow.classList.add('flash');
-        setTimeout(function(){ elNow.classList.remove('flash'); }, 300);
-      }
-    }, 3000);
-  }
-
-  setInterval(function(){
-    data.today += 1; data.week += 1; data.month += 1;
-    if (elToday) elToday.textContent = data.today.toLocaleString('ru-RU');
-    if (elWeek)  elWeek.textContent  = data.week.toLocaleString('ru-RU');
-    if (elMonth) elMonth.textContent = data.month.toLocaleString('ru-RU');
-    try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch (e) {}
-  }, 60000);
-})();
-
-/* ============================================================
-   ПЛАВНЫЙ СКРОЛЛ + ФОРМА
-============================================================ */
-document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  a.addEventListener('click',function(e){
-    var t=document.querySelector(this.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
-  });
-});
-
-var form = document.getElementById('contactForm');
-if (form) {
-  form.addEventListener('submit', function() {
-    setTimeout(function(){
-      document.getElementById('formSuccess').classList.add('show');
-    }, 400);
-  });
-}
-</script>
 </body>
 </html>
